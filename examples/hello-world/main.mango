@@ -1,0 +1,3 @@
+use "general"
+
+general.print("Hello World!")

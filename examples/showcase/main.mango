@@ -1,0 +1,60 @@
+~~ Showcase of Mango Language Features
+
+~~ Importing general utilities
+use "general"
+
+~~ Allows us to easily access PI
+alias general.math.PI as PI
+
+~~ Variables
+~~ Primitives
+int x -> 42
+float y -> 432
+char w -> 'q'
+bool e -> false
+
+~~ String(char[] with some specialties attached)
+string z -> "e"
+
+~~ Array of fixed length
+int[3] r -> [44, 23, 43]
+
+~~ Dynamic Arrays are known as vectors
+v<int> q -> {32, 42, 42}
+
+~~ Functions are known as subroutines
+
+~~ Comments with an ~~! instead of ~~ are documentation comments
+~~ which are meant to document the code
+~~! calculate the nth fibonacci number
+sub fib(int n) -> int:
+  if (n == 0):
+    return 0
+  elif (n == 1):
+    return 1
+  else:
+    ~~ Recursion!
+    return fib(n - 1) + fib(n - 2)
+  end
+end
+
+~~! Simple for loop
+for (int i in 0..3):
+  general.print(f"{i}")
+end
+
+~~! Advanced for loop
+for (int i -> x, i < 100, i += i % 2):
+  general.print(f"im not even sure what this is -> {i}")
+end
+
+~~! Enhanced for loop
+for int i in q:
+  general.print(f"{i} <- found this!")
+end
+
+~~! While loop
+while (!e):
+  general.print(f"lemme fix that!")
+  e -> true
+end
