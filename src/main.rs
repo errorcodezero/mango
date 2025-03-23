@@ -3,8 +3,11 @@ use std::io::Read;
 use anyhow::Result;
 use clap::Parser;
 use cli::Args;
+use error::error;
 
 mod cli;
+mod error;
+mod token;
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -17,7 +20,7 @@ fn main() -> Result<()> {
                 file.read_to_string(&mut text)?;
             }
 
-            println!("{}", text)
+            println!("{}", text);
         }
     }
 
