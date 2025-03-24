@@ -6,8 +6,7 @@ use "general"
 ~~ Allows us to easily access PI
 alias general.math.PI as PI
 
-~~ Variables
-~~ Primitives
+~~ Variables primitives
 int x -> 42
 float y -> 432
 char w -> 'q'

@@ -1,13 +1,13 @@
-use std::io::Read;
-
 use anyhow::Result;
 use clap::Parser;
 use cli::Args;
-use error::error;
+use scanner::Scanner;
+use std::io::Read;
 
 mod cli;
-mod error;
+mod scanner;
 mod token;
+mod tree;
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -21,6 +21,7 @@ fn main() -> Result<()> {
             }
 
             println!("{}", text);
+            let mut _scanner = Scanner::new_with_source(&text);
         }
     }
 
