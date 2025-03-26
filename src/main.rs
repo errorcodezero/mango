@@ -3,6 +3,7 @@ use clap::Parser;
 use cli::Args;
 use scanner::Scanner;
 use std::io::Read;
+use token::Token;
 
 mod cli;
 mod scanner;
@@ -19,8 +20,11 @@ fn main() -> Result<()> {
             if let Some(file) = path.get_file() {
                 file.read_to_string(&mut text)?;
             }
+            let mut tokens = Vec::new();
+            Token::from_str(&text, &mut tokens);
 
-            println!("{}", text);
+            println!("{text}");
+            println!("{:#?}", tokens);
             let mut _scanner = Scanner::new_with_source(&text);
         }
     }

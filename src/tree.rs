@@ -1,19 +1,19 @@
 use crate::token::Token;
 use std::rc::Rc;
 
-pub struct Tree<'a> {
-    left: Rc<Option<Tree<'a>>>,
-    right: Rc<Option<Tree<'a>>>,
-    up: Rc<Option<Tree<'a>>>,
-    data: Rc<Token<'a>>,
+pub struct Tree {
+    left: Rc<Option<Tree>>,
+    right: Rc<Option<Tree>>,
+    up: Rc<Option<Tree>>,
+    data: Rc<Token>,
 }
 
-impl<'a> Tree<'a> {
+impl Tree {
     pub fn new(
-        left: Rc<Option<Tree<'a>>>,
-        right: Rc<Option<Tree<'a>>>,
-        up: Rc<Option<Tree<'a>>>,
-        data: Rc<Token<'a>>,
+        left: Rc<Option<Tree>>,
+        right: Rc<Option<Tree>>,
+        up: Rc<Option<Tree>>,
+        data: Rc<Token>,
     ) -> Self {
         Self {
             left,
@@ -22,16 +22,16 @@ impl<'a> Tree<'a> {
             data,
         }
     }
-    pub fn get_left(&self) -> Rc<Option<Tree<'a>>> {
+    pub fn get_left(&self) -> Rc<Option<Tree>> {
         self.left.clone()
     }
-    pub fn get_right(&self) -> Rc<Option<Tree<'a>>> {
+    pub fn get_right(&self) -> Rc<Option<Tree>> {
         self.right.clone()
     }
-    pub fn get_up(&self) -> Rc<Option<Tree<'a>>> {
+    pub fn get_up(&self) -> Rc<Option<Tree>> {
         self.up.clone()
     }
-    pub fn get_data(&self) -> Rc<Token<'a>> {
+    pub fn get_data(&self) -> Rc<Token> {
         self.data.clone()
     }
 }

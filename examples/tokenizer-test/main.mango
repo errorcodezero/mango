@@ -1,0 +1,5 @@
+string r -> "testing"
+string x -> "testing"
+int q -> 431
+name -> r + "e"
+print q

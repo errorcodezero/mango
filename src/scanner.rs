@@ -3,7 +3,7 @@ use crate::token::Token;
 
 pub struct Scanner<'a> {
     source: &'a str,
-    tokens: Vec<Token<'a>>,
+    tokens: Vec<Token>,
 }
 
 impl<'a> Scanner<'a> {
@@ -27,13 +27,12 @@ impl<'a> Scanner<'a> {
     }
     //pub fn scan(&mut self) -> Tree {
     //    for line in self.source.lines() {
-    //        for c in line.chars() {}
+    //        let re = Regex::new(re)
     //    }
     //}
 }
 
-#[allow(clippy::needless_lifetimes)]
-impl<'a> Default for Scanner<'a> {
+impl Default for Scanner<'_> {
     fn default() -> Self {
         Scanner::new()
     }
