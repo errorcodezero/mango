@@ -1,4 +1,4 @@
-use std::num::ParseIntError;
+use unicode_segmentation::UnicodeSegmentation;
 
 #[derive(Debug)]
 pub enum Token {
@@ -88,6 +88,9 @@ impl Token {
                                 break;
                             }
                         }
+                        "," => {
+                            tokens.push(Token::Eol);
+                        }
                         "~" => {
                             if let Some(next) = line.get(i + 1..i + 2) {
                                 if next == "~" {
@@ -112,6 +115,7 @@ impl Token {
                                 tokens.push(Token::BitwiseAnd);
                             }
                         }
+                        "^" => tokens.push(Token::BitwiseXor),
                         "|" => {
                             if let Some(next) = line.get(i + 1..i + 2) {
                                 if next == "|" {
@@ -139,23 +143,22 @@ impl Token {
                         "\"" => {
                             let mut literal = String::new();
                             if let Some(substr) = line.get(i + 1..line.len() - 1) {
-                                for i in substr.chars() {
-                                    if i == '"' {
-                                        // no clue why this works but a skip of 9 is needed or it
-                                        // breaks
-                                        skip += 9;
+                                for i in substr.graphemes(true) {
+                                    if i == "\"" {
                                         break;
                                     } else {
-                                        literal.push(i);
+                                        literal += i;
                                     }
                                 }
-                                tokens.push(Token::StringLiteral(literal))
+                                tokens.push(Token::StringLiteral(literal));
+                                skip += substr.len();
                             }
                         }
                         "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => {
                             let mut literal = String::new();
                             literal += curr;
-                            if let Some(substr) = line.get(i + 1..line.len() - 1) {
+                            if let Some(substr) = line.get(i + 1..line.len()) {
+                                println!("{}", line);
                                 for i in substr.chars() {
                                     if i == '1'
                                         || i == '2'
@@ -170,11 +173,14 @@ impl Token {
                                         || i == '.'
                                     {
                                         literal.push(i);
-                                    } else {
-                                        skip += literal.len();
                                     }
                                 }
-                                tokens.push(Token::IntLiteral(literal.parse().unwrap()));
+                                if literal.contains(".") {
+                                    tokens.push(Token::FloatLiteral(literal.parse().unwrap()));
+                                } else {
+                                    tokens.push(Token::IntLiteral(literal.parse().unwrap()));
+                                }
+                                skip += literal.len();
                             }
                         }
                         _ => {
