@@ -18,7 +18,7 @@ pub enum Token {
     // Literals
     IntLiteral(i32),
     FloatLiteral(f32),
-    CharLiteral(char),
+    CharLiteral(String),
     BoolLiteral(bool),
     StringLiteral(String),
     // Bitwise Operators
@@ -124,7 +124,15 @@ impl Token {
                         "~" => {
                             if let Some(next) = line.get(i + 1..i + 2) {
                                 if next == "~" {
-                                    tokens.push(Token::Comment);
+                                    if let Some(next) = line.get(i + 2..i + 3) {
+                                        if next == "!" {
+                                            tokens.push(Token::DocComment);
+                                        } else {
+                                            tokens.push(Token::Comment);
+                                        }
+                                    } else {
+                                        tokens.push(Token::Comment);
+                                    }
                                     break;
                                 } else {
                                     tokens.push(Token::BitwiseNot);
@@ -182,6 +190,15 @@ impl Token {
                                 }
                                 skip += literal.len() + 1;
                                 tokens.push(Token::StringLiteral(literal));
+                            }
+                        }
+                        "'" => {
+                            // first if-let is there for emojis and whatnot
+                            if let Some(substr) = line.get(i + 1..line.len()) {
+                                if let Some(char) = substr.graphemes(true).nth(0) {
+                                    tokens.push(Token::CharLiteral(char.to_string()));
+                                    skip += 2;
+                                }
                             }
                         }
                         "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => {
