@@ -1,6 +1,9 @@
-string r -> "testing 🍎🍎🍎🍎🍎🍎🍎🍎🍎"
+string r -> "testing 🍎🍎🍎🍎🍎🍎🍎🍎🍎" + "e"
 float pi -> 3.14
-string x -> "🍎🍎🍎 testing"
 int q -> 431
+string x -> "🍎🍎🍎 testing"
+bool wee -> pi == 3.14&& q > 30
+q -> 431
 name -> r + "e"
 print q
+~~ e

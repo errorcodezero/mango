@@ -36,7 +36,9 @@ pub enum Token {
     Equality,
     NotEqual,
     GreaterThan,
+    GreaterThanEqual,
     LessThan,
+    LessThanEqual,
     // Comments
     Comment,
     DocComment,
@@ -88,6 +90,34 @@ impl Token {
                                 break;
                             }
                         }
+                        "<" => {
+                            if let Some(next) = line.get(i + 1..i + 2) {
+                                if next == "<" {
+                                    tokens.push(Token::LShift);
+                                    skip += 1;
+                                } else if next == "=" {
+                                    tokens.push(Token::LessThanEqual)
+                                } else {
+                                    tokens.push(Token::LessThan);
+                                }
+                            } else {
+                                tokens.push(Token::LessThan);
+                            }
+                        }
+                        ">" => {
+                            if let Some(next) = line.get(i + 1..i + 2) {
+                                if next == ">" {
+                                    tokens.push(Token::RShift);
+                                    skip += 1;
+                                } else if next == "=" {
+                                    tokens.push(Token::GreaterThanEqual)
+                                } else {
+                                    tokens.push(Token::GreaterThan);
+                                }
+                            } else {
+                                tokens.push(Token::GreaterThan);
+                            }
+                        }
                         "," => {
                             tokens.push(Token::Eol);
                         }
@@ -95,7 +125,7 @@ impl Token {
                             if let Some(next) = line.get(i + 1..i + 2) {
                                 if next == "~" {
                                     tokens.push(Token::Comment);
-                                    skip += 1;
+                                    break;
                                 } else {
                                     tokens.push(Token::BitwiseNot);
                                 }
@@ -150,8 +180,8 @@ impl Token {
                                         literal += i;
                                     }
                                 }
+                                skip += literal.len() + 1;
                                 tokens.push(Token::StringLiteral(literal));
-                                skip += substr.len();
                             }
                         }
                         "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => {
@@ -173,6 +203,8 @@ impl Token {
                                         || i == '.'
                                     {
                                         literal.push(i);
+                                    } else {
+                                        break;
                                     }
                                 }
                                 if literal.contains(".") {
@@ -180,7 +212,7 @@ impl Token {
                                 } else {
                                     tokens.push(Token::IntLiteral(literal.parse().unwrap()));
                                 }
-                                skip += literal.len();
+                                skip += literal.len() - 1;
                             }
                         }
                         _ => {
@@ -199,6 +231,10 @@ impl Token {
                                     tokens.push(Token::Bool)
                                 } else if buf == "print" {
                                     tokens.push(Token::Print)
+                                } else if buf == "true" {
+                                    tokens.push(Token::BoolLiteral(true))
+                                } else if buf == "false" {
+                                    tokens.push(Token::BoolLiteral(false))
                                 } else {
                                     tokens.push(Token::Variable(buf.clone()));
                                 }
