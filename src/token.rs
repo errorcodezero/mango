@@ -1,5 +1,7 @@
 use unicode_segmentation::UnicodeSegmentation;
 
+pub const LAYERS_OF_PRECEDENCE: i8 = 14;
+
 #[derive(Debug)]
 pub enum Token {
     // Primitives included in the language that don't need the standard library
@@ -7,6 +9,7 @@ pub enum Token {
     Float,
     Char,
     Bool,
+    Null,
     // Temporary and will be removed when I can get an actual standard library to work
     String,
     Print,
@@ -32,6 +35,9 @@ pub enum Token {
     LogicalAnd,
     LogicalOr,
     LogicalNot,
+    // Parenthesis
+    OpeningParenthesis,
+    ClosingParenthesis,
     // Comparison
     Equality,
     NotEqual,
@@ -43,7 +49,7 @@ pub enum Token {
     Comment,
     DocComment,
     // Variable
-    Variable(String),
+    Name(String),
     Assignment,
     // End of line
     Eol,
@@ -55,6 +61,43 @@ impl Token {
     pub fn from_str(text: &str, tokens: &mut Vec<Token>) {
         text.lines().for_each(|x| Token::from_line(x, tokens));
         tokens.push(Token::Eof);
+    }
+    // from c++'s order of operations shortened since not all c++ operations exist in this yet
+    pub fn get_precedence(&self) -> i8 {
+        match *self {
+            Token::String
+            | Token::Int
+            | Token::Float
+            | Token::Char
+            | Token::Bool
+            | Token::Eol
+            | Token::Eof
+            | Token::Comment
+            | Token::DocComment => -1,
+            Token::IntLiteral(_)
+            | Token::CharLiteral(_)
+            | Token::BoolLiteral(_)
+            | Token::FloatLiteral(_)
+            | Token::StringLiteral(_)
+            | Token::Null => 0,
+            Token::Name(_) | Token::OpeningParenthesis | Token::ClosingParenthesis => 1,
+            Token::LogicalNot | Token::BitwiseNot => 2,
+            Token::Multiply | Token::Divide => 3,
+            Token::Add | Token::Subtract => 4,
+            Token::LShift | Token::RShift => 5,
+            Token::GreaterThan
+            | Token::LessThan
+            | Token::GreaterThanEqual
+            | Token::LessThanEqual => 6,
+            Token::Equality | Token::NotEqual => 7,
+            Token::BitwiseAnd => 8,
+            Token::BitwiseXor => 9,
+            Token::BitwiseOr => 10,
+            Token::LogicalAnd => 11,
+            Token::LogicalOr => 12,
+            // 13
+            Token::Assignment | Token::Print => 14,
+        }
     }
     fn from_line(line: &str, tokens: &mut Vec<Token>) {
         let mut skip = 0;
@@ -205,7 +248,6 @@ impl Token {
                             let mut literal = String::new();
                             literal += curr;
                             if let Some(substr) = line.get(i + 1..line.len()) {
-                                println!("{}", line);
                                 for i in substr.chars() {
                                     if i == '1'
                                         || i == '2'
@@ -232,6 +274,8 @@ impl Token {
                                 skip += literal.len() - 1;
                             }
                         }
+                        "{" => tokens.push(Token::OpeningParenthesis),
+                        "}" => tokens.push(Token::ClosingParenthesis),
                         _ => {
                             if curr != " " && curr != "." && curr != "(" && curr != ")" {
                                 buf += curr;
@@ -252,8 +296,10 @@ impl Token {
                                     tokens.push(Token::BoolLiteral(true))
                                 } else if buf == "false" {
                                     tokens.push(Token::BoolLiteral(false))
+                                } else if buf == "null" {
+                                    tokens.push(Token::Null)
                                 } else {
-                                    tokens.push(Token::Variable(buf.clone()));
+                                    tokens.push(Token::Name(buf.clone()));
                                 }
                                 buf.clear();
                             }

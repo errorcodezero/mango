@@ -1,12 +1,11 @@
 use anyhow::Result;
 use clap::Parser;
 use cli::Args;
-use scanner::Scanner;
 use std::io::Read;
 use token::Token;
 
 mod cli;
-mod scanner;
+mod error;
 mod token;
 mod tree;
 
@@ -25,7 +24,6 @@ fn main() -> Result<()> {
 
             println!("{text}");
             println!("{:#?}", tokens);
-            let mut _scanner = Scanner::new_with_source(&text);
         }
     }
 
