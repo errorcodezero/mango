@@ -63,9 +63,9 @@ pub enum Lexeme {
 
 #[derive(Default, Debug)]
 pub struct Token {
-    token_type: TokenType,
-    lexeme: Option<Lexeme>,
-    line: usize,
+    pub token_type: TokenType,
+    pub lexeme: Option<Lexeme>,
+    pub line: usize,
 }
 
 impl Token {
