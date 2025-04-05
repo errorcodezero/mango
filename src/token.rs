@@ -43,6 +43,7 @@ pub enum TokenType {
     This,
     True,
     String,
+    Char,
     Int,
     Float,
     While,
@@ -65,16 +66,14 @@ pub struct Token {
     token_type: TokenType,
     lexeme: Option<Lexeme>,
     line: usize,
-    file: String,
 }
 
 impl Token {
-    pub fn new(token_type: TokenType, lexeme: Option<Lexeme>, line: usize, file: String) -> Token {
+    pub fn new(token_type: TokenType, lexeme: Option<Lexeme>, line: usize) -> Token {
         Token {
             token_type,
             lexeme,
             line,
-            file,
         }
     }
     pub fn get_lexeme(&self) -> &Option<Lexeme> {
@@ -82,9 +81,6 @@ impl Token {
     }
     pub fn get_line(&self) -> usize {
         self.line
-    }
-    pub fn get_file(&self) -> &str {
-        &self.file[..]
     }
     pub fn get_token_type(&self) -> &TokenType {
         &self.token_type

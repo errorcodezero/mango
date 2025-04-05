@@ -4,10 +4,7 @@ use unicode_segmentation::{Graphemes, UnicodeSegmentation};
 
 #[derive(Default)]
 pub struct Scanner {
-    start: usize,
-    current: usize,
     line: usize,
-    file: String,
     source: RefCell<String>,
     tokens: RefCell<Vec<Token>>,
 }
@@ -39,6 +36,7 @@ impl Scanner {
         keywords.insert("true", TokenType::True);
         keywords.insert("while", TokenType::While);
         keywords.insert("string", TokenType::String);
+        keywords.insert("char", TokenType::Char);
         keywords.insert("false", TokenType::False);
         keywords.insert("print", TokenType::Print);
         keywords.insert("class", TokenType::Class);
@@ -46,6 +44,8 @@ impl Scanner {
         // me use iter inside the loop
         while let Some(c) = iter.next() {
             match c {
+                ";" => self.push_token(TokenType::Semicolon),
+                ":" => self.push_token(TokenType::Colon),
                 "(" => self.push_token(TokenType::LeftParen),
                 ")" => self.push_token(TokenType::RightParen),
                 "{" => self.push_token(TokenType::LeftBrace),
@@ -73,6 +73,14 @@ impl Scanner {
                         &mut iter,
                     );
                 }
+                "|" => {
+                    self.match_push_token(
+                        "|",
+                        TokenType::LogicalOr,
+                        TokenType::BitwiseOr,
+                        &mut iter,
+                    );
+                }
                 "^" => {
                     self.push_token(TokenType::BitwiseXor);
                 }
@@ -84,12 +92,20 @@ impl Scanner {
                     &mut iter,
                 ),
                 "~" => {
-                    while let Some(next) = iter.next() {
-                        if next == "\n" {
-                            self.line += 1;
-                            break;
+                    if let Some(peeked) = iter.peek() {
+                        if peeked == &"~" {
+                            while let Some(next) = iter.next() {
+                                if next == "\n" {
+                                    self.line += 1;
+                                    break;
+                                }
+                                iter.next();
+                            }
+                        } else {
+                            self.push_token(TokenType::BitwiseNot);
                         }
-                        iter.next();
+                    } else {
+                        panic!("Invalid token: ~");
                     }
                 }
                 "\"" => self.string(&mut iter),
@@ -210,15 +226,12 @@ impl Scanner {
     fn push_token(&mut self, token_type: TokenType) {
         self.tokens
             .borrow_mut()
-            .push(Token::new(token_type, None, self.line, String::new()));
+            .push(Token::new(token_type, None, self.line));
     }
 
     fn push_token_with_lexeme(&mut self, token_type: TokenType, lexeme: Lexeme) {
-        self.tokens.borrow_mut().push(Token::new(
-            token_type,
-            Some(lexeme),
-            self.line,
-            String::new(),
-        ));
+        self.tokens
+            .borrow_mut()
+            .push(Token::new(token_type, Some(lexeme), self.line));
     }
 }
