@@ -16,5 +16,7 @@ int main(int argc, char *argv[]) {
   Mango::Scanner scanner = Mango::Scanner(contents.str());
   std::vector<Mango::Token> tokens = scanner.scan();
 
+  std::cout << tokens.size();
+
   return 0;
 }

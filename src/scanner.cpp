@@ -90,7 +90,7 @@ std::vector<Mango::Token> Mango::Scanner::scan() {
       string();
       break;
     default:
-      if (std::isalpha(static_cast<unsigned char>(*c))) {
+      if (is_alpha(*c)) {
         identifier(*c);
       } else {
         std::wstring error = L"Unexpected character: ";
@@ -218,12 +218,12 @@ void Mango::Scanner::number(const wchar_t first_digit) {
 }
 
 void Mango::Scanner::identifier(const wchar_t first_char) {
-  assert(peek().has_value());
-
   std::wstring identifier = L"";
   identifier += first_char;
 
-  while (!at_end() && std::isalnum(static_cast<unsigned char>(*peek()))) {
+  assert(peek().has_value());
+
+  while (!at_end() && is_alphanumeric(*peek())) {
     assert(peek().has_value());
 
     identifier += *peek();
@@ -239,7 +239,3 @@ void Mango::Scanner::identifier(const wchar_t first_char) {
                  std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
                      identifier)});
 }
-
-bool Mango::Scanner::is_digit(const wchar_t digit) const {
-  return '0' <= digit || digit <= '9';
-};
