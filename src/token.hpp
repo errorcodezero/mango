@@ -4,18 +4,14 @@
 #include <cmath>
 #include <cstdint>
 #include <optional>
-#include <string_view>
+#include <string>
+#include <variant>
 
 namespace Mango {
 
 struct Lexeme {
   uint32_t line;
-  union {
-    std::wstring_view stringData;
-    std::uint32_t intData;
-    std::double_t floatData;
-    bool boolData;
-  } data;
+  std::variant<std::wstring, std::uint32_t, std::double_t, bool> data;
 };
 
 enum class TokenType {

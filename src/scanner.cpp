@@ -2,10 +2,14 @@
 #include "mango.hpp"
 #include "token.hpp"
 #include <cassert>
+#include <cctype>
 #include <cstdint>
+#include <iostream>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 
 std::vector<Mango::Token> Mango::Scanner::scan() {
   using namespace std::string_literals;
@@ -80,13 +84,20 @@ std::vector<Mango::Token> Mango::Scanner::scan() {
     case '7':
     case '8':
     case '9':
+      number(*c);
       break;
     case '"':
       string();
       break;
     default:
-      Mango::error(&"Unexpected character: "[*c], "program", line);
-      break;
+      if (std::isalpha(static_cast<unsigned char>(*c))) {
+        identifier(*c);
+      } else {
+        std::wstring error = L"Unexpected character: ";
+        error += *c;
+        Mango::error(error, L"program", line);
+        break;
+      }
     }
   }
   return std::move(tokens);
@@ -94,7 +105,7 @@ std::vector<Mango::Token> Mango::Scanner::scan() {
 
 std::optional<wchar_t> Mango::Scanner::advance() {
   if (!at_end()) {
-    const wchar_t c = source.at(++current);
+    const wchar_t c = source.at(current++);
     return std::make_optional(c);
   } else {
     return std::nullopt;
@@ -103,7 +114,7 @@ std::optional<wchar_t> Mango::Scanner::advance() {
 
 std::optional<wchar_t> Mango::Scanner::peek() {
   if (!at_end()) {
-    const wchar_t c = source.at(current + 1);
+    const wchar_t c = source.at(current);
     return std::make_optional(c);
   } else {
     return std::nullopt;
@@ -119,14 +130,16 @@ void Mango::Scanner::push_token(const Mango::TokenType type,
   tokens.push_back(Token{.type = type, .lexeme = std::make_optional(lexeme)});
 }
 
-bool Mango::Scanner::match(wchar_t expected) {
+bool Mango::Scanner::match(const wchar_t expected) {
   if (at_end())
     return false;
 
-  if (source.at(current) != expected)
+  assert(peek().has_value());
+
+  if (*peek() != expected)
     return false;
 
-  current++;
+  advance();
   return true;
 }
 
@@ -148,8 +161,7 @@ void Mango::Scanner::comment() {
 }
 
 void Mango::Scanner::string() {
-  uint32_t start = current;
-  uint32_t num = 0;
+  std::wstringstream str;
 
   while (!at_end()) {
     std::optional<wchar_t> peeked = peek();
@@ -158,15 +170,18 @@ void Mango::Scanner::string() {
       advance();
       break;
     }
-    num++;
+    str << *peeked;
+    advance();
   }
-  push_token(TokenType::STRING_LITERAL,
-             Lexeme{.line = current, .data = {source.substr(start, num)}});
+  push_token(
+      TokenType::STRING_LITERAL,
+      Lexeme{.line = line,
+             .data =
+                 std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
+                     str.str())});
 }
 
 void Mango::Scanner::number(const wchar_t first_digit) {
-  assert(Scanner::is_digit(first_digit));
-
   std::string number = "";
   number += first_digit;
   bool floating_point = false;
@@ -174,7 +189,7 @@ void Mango::Scanner::number(const wchar_t first_digit) {
   while (!at_end()) {
     assert(peek().has_value());
 
-    if (!is_digit(*peek()) && *peek() != '.') {
+    if (is_digit(*peek()) || *peek() == '.') {
       if (*peek() == '.') {
         floating_point = true;
       }
@@ -186,31 +201,45 @@ void Mango::Scanner::number(const wchar_t first_digit) {
   }
 
   if (floating_point) {
-    push_token(TokenType::FLOAT_LITERAL,
-               Lexeme{.line = line, .data = {.floatData = std::stod(number)}});
+    push_token(
+        TokenType::FLOAT_LITERAL,
+        Lexeme{
+            .line = line,
+            .data =
+                std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
+                    static_cast<std::double_t>(std::stod(number)))});
     return;
   }
   push_token(
       TokenType::INT_LITERAL,
       Lexeme{.line = line,
-             .data = {.intData = static_cast<uint32_t>(std::stoul(number))}});
+             .data = std::variant<std::wstring, std::uint32_t, double, bool>(
+                 static_cast<std::uint32_t>(std::stoul(number)))});
 }
 
-bool Mango::Scanner::is_digit(const wchar_t first_digit) {
-  switch (first_digit) {
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9':
-    return true;
+void Mango::Scanner::identifier(const wchar_t first_char) {
+  assert(peek().has_value());
 
-  default:
-    return false;
+  std::wstring identifier = L"";
+  identifier += first_char;
+
+  while (!at_end() && std::isalnum(static_cast<unsigned char>(*peek()))) {
+    assert(peek().has_value());
+
+    identifier += *peek();
+    advance();
   }
+
+  advance();
+
+  push_token(
+      TokenType::IDENTIFIER,
+      Lexeme{.line = line,
+             .data =
+                 std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
+                     identifier)});
+}
+
+bool Mango::Scanner::is_digit(const wchar_t digit) const {
+  return '0' <= digit || digit <= '9';
 };

@@ -23,12 +23,13 @@ private:
   void match_push_token(wchar_t expected, const TokenType type,
                         const TokenType fallback_type);
 
-  bool match(wchar_t expected);
-  bool at_end() { return current >= source.length(); }
-  bool is_digit(const wchar_t first_digit);
+  bool match(const wchar_t expected);
+  bool at_end() const { return current >= source.length(); }
+  bool is_digit(const wchar_t digit) const;
 
   void comment();
   void string();
+  void identifier(const wchar_t first_char);
   void number(const wchar_t first_digit);
 
 public:

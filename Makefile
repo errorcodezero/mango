@@ -18,6 +18,10 @@ debug: setup
 debug: CXXFLAGS += -g
 debug: $(BUILD_DIR)/$(EXE)
 
+debug-memory: setup
+debug-memory: CXXFLAGS += -g -fsanitize=address,undefined
+debug-memory: $(BUILD_DIR)/$(EXE)
+
 .PHONY: all debug release clean setup
 
 setup:

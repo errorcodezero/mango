@@ -2,5 +2,5 @@
 #include <string>
 
 namespace Mango {
-void error(std::string error, std::string file, std::uint32_t line);
+void error(std::wstring error, std::wstring file, std::uint32_t line);
 }
