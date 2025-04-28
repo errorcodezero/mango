@@ -44,8 +44,9 @@ public:
 
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-  Expression *getLeft() { return left; }
-  Expression *getRight() { return right; }
+  Expression *get_left() { return left; }
+  Expression *get_right() { return right; }
+  Token *get_operator() { return &oper; }
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_BINARY_EXPRESSION_HPP_

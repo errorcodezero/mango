@@ -1,7 +1,9 @@
 #include "ast_printer.hpp"
 #include "expression.hpp"
+#include "interpreter.hpp"
 #include "parser.hpp"
 #include "scanner.hpp"
+#include "visitor.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -20,9 +22,13 @@ int main(int argc, char *argv[]) {
 
   Mango::Expression *expression = parser.parse();
 
-  Mango::AstPrinter printer = Mango::AstPrinter();
+  Mango::Interpreter interpreter = Mango::Interpreter();
 
-  std::wcout << printer.print(*expression);
+  Mango::VisitResult result = interpreter.evaluate(expression);
+
+  Mango::Data *data = std::get<Mango::Data *>(result);
+
+  std::cout << std::get<std::int32_t>(*data);
 
   delete expression;
 

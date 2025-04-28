@@ -28,7 +28,7 @@ public:
   }
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-  Expression *getExpression() { return expression; }
+  Expression *get_expression() { return expression; }
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_GROUPING_HPP_

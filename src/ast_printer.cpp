@@ -7,9 +7,10 @@
 #include "visitor.hpp"
 #include <cstdarg>
 
-std::wstring Mango::AstPrinter::parenthesize(std::wstring name,
-                                             Expression *expression1,
-                                             Expression *expression2) {
+namespace Mango {
+std::wstring AstPrinter::parenthesize(std::wstring name,
+                                      Expression *expression1,
+                                      Expression *expression2) {
   std::wstring builder = L"(";
   if (expression1 != nullptr) {
     builder += std::get<std::wstring>(expression1->accept(*this));
@@ -23,21 +24,18 @@ std::wstring Mango::AstPrinter::parenthesize(std::wstring name,
   builder += L")";
   return builder;
 }
-Mango::VisitResult
-Mango::AstPrinter::visit(Mango::GroupingExpression *expression) {
-  return parenthesize(L"group", expression->getExpression(), nullptr);
+VisitResult AstPrinter::visit(GroupingExpression *expression) {
+  return parenthesize(L"group", expression->get_expression(), nullptr);
 }
-Mango::VisitResult
-Mango::AstPrinter::visit(Mango::LiteralExpression *expression) {
+VisitResult AstPrinter::visit(LiteralExpression *expression) {
   expression->getData();
   return parenthesize(L"LITERAL", nullptr, nullptr);
 }
-Mango::VisitResult
-Mango::AstPrinter::visit(Mango::UnaryExpression *expression) {
-  return parenthesize(L"OPERATION", expression->getRight(), nullptr);
+VisitResult AstPrinter::visit(UnaryExpression *expression) {
+  return parenthesize(L"OPERATION", expression->get_right(), nullptr);
 }
-Mango::VisitResult
-Mango::AstPrinter::visit(Mango::BinaryExpression *expression) {
-  return parenthesize(L"OPERATION", expression->getLeft(),
-                      expression->getRight());
+VisitResult AstPrinter::visit(BinaryExpression *expression) {
+  return parenthesize(L"OPERATION", expression->get_left(),
+                      expression->get_right());
 }
+} // namespace Mango

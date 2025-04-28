@@ -9,7 +9,8 @@
 #include <string>
 #include <utility>
 
-std::vector<Mango::Token> Mango::Scanner::scan() {
+namespace Mango {
+std::vector<Token> Scanner::scan() {
   using namespace std::string_literals;
   while (!at_end()) {
     const std::optional<wchar_t> c = advance();
@@ -101,7 +102,7 @@ std::vector<Mango::Token> Mango::Scanner::scan() {
   return std::move(tokens);
 }
 
-std::optional<wchar_t> Mango::Scanner::advance() {
+std::optional<wchar_t> Scanner::advance() {
   if (!at_end()) {
     const wchar_t c = source.at(current++);
     return std::make_optional(c);
@@ -110,7 +111,7 @@ std::optional<wchar_t> Mango::Scanner::advance() {
   }
 }
 
-std::optional<wchar_t> Mango::Scanner::peek() {
+std::optional<wchar_t> Scanner::peek() {
   if (!at_end()) {
     const wchar_t c = source.at(current);
     return std::make_optional(c);
@@ -119,17 +120,16 @@ std::optional<wchar_t> Mango::Scanner::peek() {
   }
 }
 
-void Mango::Scanner::push_token(const Mango::TokenType type) {
+void Scanner::push_token(const TokenType type) {
   tokens.push_back(
       Token{.type = type, .lexeme = {.line = line, .data = nullptr}});
 };
 
-void Mango::Scanner::push_token(const Mango::TokenType type,
-                                const Mango::Lexeme lexeme) {
+void Scanner::push_token(const TokenType type, const Lexeme lexeme) {
   tokens.push_back(Token{.type = type, .lexeme = lexeme});
 }
 
-bool Mango::Scanner::match(const wchar_t expected) {
+bool Scanner::match(const wchar_t expected) {
   if (at_end())
     return false;
 
@@ -142,12 +142,12 @@ bool Mango::Scanner::match(const wchar_t expected) {
   return true;
 }
 
-void Mango::Scanner::match_push_token(wchar_t expected, const TokenType type,
-                                      const TokenType fallback_type) {
+void Scanner::match_push_token(wchar_t expected, const TokenType type,
+                               const TokenType fallback_type) {
   push_token(match(expected) ? type : fallback_type);
 }
 
-void Mango::Scanner::comment() {
+void Scanner::comment() {
   while (!at_end()) {
     std::optional<wchar_t> peeked = peek();
     assert(peeked.has_value());
@@ -159,7 +159,7 @@ void Mango::Scanner::comment() {
   }
 }
 
-void Mango::Scanner::string() {
+void Scanner::string() {
   std::wstringstream str;
 
   while (!at_end()) {
@@ -176,7 +176,7 @@ void Mango::Scanner::string() {
              Lexeme{.line = line, .data = new Data(str.str())});
 }
 
-void Mango::Scanner::number(const wchar_t first_digit) {
+void Scanner::number(const wchar_t first_digit) {
   std::string number = "";
   number += first_digit;
   bool floating_point = false;
@@ -205,10 +205,10 @@ void Mango::Scanner::number(const wchar_t first_digit) {
   push_token(
       TokenType::INT_LITERAL,
       Lexeme{.line = line,
-             .data = new Data(static_cast<std::uint32_t>(std::stoul(number)))});
+             .data = new Data(static_cast<std::int32_t>(std::stoul(number)))});
 }
 
-void Mango::Scanner::identifier(const wchar_t first_char) {
+void Scanner::identifier(const wchar_t first_char) {
   std::wstring identifier = L"";
   identifier += first_char;
 
@@ -226,3 +226,4 @@ void Mango::Scanner::identifier(const wchar_t first_char) {
   push_token(TokenType::IDENTIFIER,
              Lexeme{.line = line, .data = new Data(identifier)});
 }
+} // namespace Mango

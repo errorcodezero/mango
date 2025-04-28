@@ -1,6 +1,5 @@
 #include "parser.hpp"
 #include "binary_expression.hpp"
-#include "data.hpp"
 #include "expression.hpp"
 #include "grouping_expression.hpp"
 #include "literal_expression.hpp"
@@ -10,19 +9,26 @@
 #include <cassert>
 #include <optional>
 
-Mango::Expression *Mango::Parser::expression() { return equality(); }
+namespace Mango {
+Expression *Parser::expression() { return equality(); }
 
-Mango::Expression *Mango::Parser::equality() {
+Expression *Parser::equality() {
   Expression *expression = comparison();
   assert(expression != nullptr);
 
   while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
+    std::optional<std::reference_wrapper<Token>> oper = peek_previous();
+    assert(oper.has_value());
+    Expression *right = comparison();
+    assert(right != nullptr);
+    expression = new BinaryExpression(expression, right, *oper);
   }
 
+  assert(expression != nullptr);
   return expression;
 }
 
-bool Mango::Parser::match(std::initializer_list<Mango::TokenType> types) {
+bool Parser::match(std::initializer_list<TokenType> types) {
   for (TokenType type : types) {
     if (check(type)) {
       advance();
@@ -33,14 +39,13 @@ bool Mango::Parser::match(std::initializer_list<Mango::TokenType> types) {
   return false;
 }
 
-bool Mango::Parser::check(TokenType type) {
+bool Parser::check(TokenType type) {
   if (at_end())
     return false;
   return peek().type == type;
 }
 
-std::optional<std::reference_wrapper<Mango::Token>>
-Mango::Parser::peek_previous() {
+std::optional<std::reference_wrapper<Token>> Parser::peek_previous() {
   if (!at_start())
     return std::make_optional(
         std::reference_wrapper<Token>(tokens.at(current - 1)));
@@ -48,7 +53,7 @@ Mango::Parser::peek_previous() {
     return std::nullopt;
 }
 
-Mango::Expression *Mango::Parser::comparison() {
+Expression *Parser::comparison() {
   Expression *expression = term();
   assert(expression != nullptr);
 
@@ -63,7 +68,7 @@ Mango::Expression *Mango::Parser::comparison() {
   return expression;
 }
 
-Mango::Expression *Mango::Parser::term() {
+Expression *Parser::term() {
   Expression *expression = factor();
   assert(expression != nullptr);
 
@@ -76,7 +81,7 @@ Mango::Expression *Mango::Parser::term() {
   return expression;
 }
 
-Mango::Expression *Mango::Parser::factor() {
+Expression *Parser::factor() {
   Expression *expression = unary();
   assert(expression != nullptr);
 
@@ -89,7 +94,7 @@ Mango::Expression *Mango::Parser::factor() {
   return expression;
 }
 
-Mango::Expression *Mango::Parser::unary() {
+Expression *Parser::unary() {
   if (match({TokenType::BANG, TokenType::MINUS})) {
     std::optional<std::reference_wrapper<Token>> oper = peek_previous();
     Expression *right = unary();
@@ -103,7 +108,7 @@ Mango::Expression *Mango::Parser::unary() {
   return primary();
 }
 
-Mango::Expression *Mango::Parser::primary() {
+Expression *Parser::primary() {
   Expression *expression = nullptr;
   if (match({TokenType::INT_LITERAL, TokenType::STRING_LITERAL,
              TokenType::FLOAT_LITERAL, TokenType::TRUE, TokenType::FALSE})) {
@@ -122,3 +127,4 @@ end:
   assert(expression != nullptr);
   return expression;
 }
+} // namespace Mango

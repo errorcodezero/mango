@@ -1,11 +1,12 @@
 #ifndef INCLUDE_SRC_VISITOR_HPP_
 #define INCLUDE_SRC_VISITOR_HPP_
 
+#include "data.hpp"
 #include <string>
 #include <variant>
 namespace Mango {
 
-using VisitResult = std::variant<std::wstring>;
+using VisitResult = std::variant<std::wstring, Data *>;
 
 class GroupingExpression;
 class LiteralExpression;

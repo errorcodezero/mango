@@ -4,7 +4,8 @@
 #include <iostream>
 #include <string>
 
-void Mango::error(std::wstring error, std::wstring file, std::uint32_t line) {
+namespace Mango {
+void error(std::wstring error, std::wstring file, std::uint32_t line) {
   std::wstring message = file;
   message += L":";
   message += std::to_wstring(line);
@@ -13,13 +14,14 @@ void Mango::error(std::wstring error, std::wstring file, std::uint32_t line) {
   std::wcerr << error;
 }
 
-void Mango::error(std::wstring error) { std::wcerr << error; }
+void error(std::wstring error) { std::wcerr << error; }
 
 // TODO: make actually good errors
-void Mango::error(Mango::TokenType type, std::wstring message) {
+void error(Mango::TokenType type, std::wstring message) {
   if (type == TokenType::END_OF_FILE) {
     Mango::error(message + L" at end");
   } else {
     Mango::error(message);
   }
 }
+} // namespace Mango

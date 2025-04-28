@@ -26,7 +26,7 @@ public:
 
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-  Data *getData() { return data; }
+  Data *get_data() { return data; }
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_LITERAL_HPP_

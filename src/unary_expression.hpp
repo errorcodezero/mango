@@ -36,7 +36,8 @@ public:
 
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-  Expression *getRight() { return right; }
+  Expression *get_right() { return right; }
+  Token *get_operator() { return &oper; }
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_UNARY_EXPRESSION_HPP_
