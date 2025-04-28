@@ -2,6 +2,7 @@
 #include "binary_expression.hpp"
 #include "data.hpp"
 #include "expression.hpp"
+#include "grouping_expression.hpp"
 #include "literal_expression.hpp"
 #include "token.hpp"
 #include "unary_expression.hpp"
@@ -119,12 +120,12 @@ Mango::Expression *Mango::Parser::primary() {
     expression = new LiteralExpression(peek_previous()->get().lexeme.data);
     goto end;
   } else if (match({TokenType::LEFT_PAREN})) {
-    std::optional<std::reference_wrapper<Token>> token =
-        consume(TokenType::RIGHT_PAREN, L"Expect ')' after expression.");
-    assert(token.has_value());
-    expression = new LiteralExpression(token->get().lexeme.data);
+    expression = new GroupingExpression(this->expression());
+    consume(TokenType::RIGHT_PAREN, L"Expect ')' after expression.");
     goto end;
   }
+
+  throw;
 
 end:
   assert(expression != nullptr);
