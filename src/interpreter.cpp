@@ -31,9 +31,11 @@ VisitResult Interpreter::visit(UnaryExpression *expression) {
 
     try {
       std::int32_t number = std::get<std::int32_t>(*right_data);
+      delete right_data;
       return VisitResult(new Data(number * -1));
     } catch (std::bad_variant_access &error) {
       std::double_t number = std::get<std::double_t>(*right_data);
+      delete right_data;
       return VisitResult(new Data(number * -1.0));
     }
   }
