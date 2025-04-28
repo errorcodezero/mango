@@ -24,5 +24,7 @@ int main(int argc, char *argv[]) {
 
   std::wcout << printer.print(*expression);
 
+  delete expression;
+
   return 0;
 }

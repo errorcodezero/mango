@@ -105,17 +105,8 @@ Mango::Expression *Mango::Parser::unary() {
 
 Mango::Expression *Mango::Parser::primary() {
   Expression *expression = nullptr;
-  if (match({TokenType::FALSE})) {
-    expression = new LiteralExpression(new Data(false));
-    goto end;
-  } else if (match({TokenType::TRUE})) {
-    expression = new LiteralExpression(new Data(true));
-    goto end;
-  } else if (match({TokenType::NIL})) {
-    expression = new LiteralExpression(nullptr);
-    goto end;
-  } else if (match({TokenType::INT_LITERAL, TokenType::STRING_LITERAL,
-                    TokenType::FLOAT_LITERAL})) {
+  if (match({TokenType::INT_LITERAL, TokenType::STRING_LITERAL,
+             TokenType::FLOAT_LITERAL, TokenType::TRUE, TokenType::FALSE})) {
     assert(peek_previous().has_value());
     expression = new LiteralExpression(peek_previous()->get().lexeme.data);
     goto end;

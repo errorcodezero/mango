@@ -13,7 +13,7 @@ class LiteralExpression : public Mango::Expression {
 public:
   LiteralExpression(Data *data) { this->data = data; }
 
-  ~LiteralExpression() {}
+  ~LiteralExpression() { delete data; }
 
   LiteralExpression(LiteralExpression &expr) { data = expr.data; }
 
