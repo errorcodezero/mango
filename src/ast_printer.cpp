@@ -28,7 +28,7 @@ VisitResult AstPrinter::visit(GroupingExpression *expression) {
   return parenthesize(L"group", expression->get_expression(), nullptr);
 }
 VisitResult AstPrinter::visit(LiteralExpression *expression) {
-  expression->getData();
+  expression->get_data();
   return parenthesize(L"LITERAL", nullptr, nullptr);
 }
 VisitResult AstPrinter::visit(UnaryExpression *expression) {

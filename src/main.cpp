@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <variant>
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
@@ -28,9 +29,20 @@ int main(int argc, char *argv[]) {
 
   Mango::Data *data = std::get<Mango::Data *>(result);
 
-  std::cout << std::get<std::int32_t>(*data);
+  if (auto *v = std::get_if<std::int32_t>(data)) {
+    std::cout << *v;
+  } else if (auto *v = std::get_if<std::double_t>(data)) {
+    std::cout << *v;
+  } else if (auto *v = std::get_if<bool>(data)) {
+    std::cout << *v;
+  } else if (auto *v = std::get_if<std::wstring>(data)) {
+    std::wcout << *v;
+  }
 
   delete expression;
+  delete data;
 
   return 0;
 }
+
+template <typename T> void print(T value) { std::cout << value; }

@@ -39,7 +39,9 @@ VisitResult Interpreter::visit(UnaryExpression *expression) {
   }
   case TokenType::BANG: {
     Data *right_data = std::get<Data *>(right);
-    return VisitResult(new Data(!is_truthy(right_data)));
+    Data *result = new Data(!is_truthy(right_data));
+    delete right_data;
+    return result;
   }
   default: {
     throw;
@@ -51,12 +53,13 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
   VisitResult left = evaluate(expression->get_left());
   VisitResult right = evaluate(expression->get_right());
 
+  Data *left_data = std::get<Data *>(left);
+  Data *right_data = std::get<Data *>(right);
+
   switch (expression->get_operator()->type) {
   // TODO: Add string concat for plus
   case TokenType::PLUS: {
     bool integer = true;
-    Data *left_data = std::get<Data *>(left);
-    Data *right_data = std::get<Data *>(right);
     std::double_t sum = 0.0;
 
     try {
@@ -77,6 +80,9 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
       integer = false;
     }
 
+    delete left_data;
+    delete right_data;
+
     if (integer) {
       return VisitResult(new Data(static_cast<std::int32_t>(sum)));
     }
@@ -84,8 +90,6 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
   }
   case TokenType::MINUS: {
     bool integer = true;
-    Data *left_data = std::get<Data *>(left);
-    Data *right_data = std::get<Data *>(right);
     std::double_t diff = 0.0;
 
     try {
@@ -106,6 +110,9 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
       integer = false;
     }
 
+    delete left_data;
+    delete right_data;
+
     if (integer) {
       return VisitResult(new Data(static_cast<std::int32_t>(diff)));
     }
@@ -113,8 +120,6 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
   }
   case TokenType::STAR: {
     bool integer = true;
-    Data *left_data = std::get<Data *>(left);
-    Data *right_data = std::get<Data *>(right);
     std::double_t prod = 0.0;
 
     try {
@@ -135,6 +140,9 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
       integer = false;
     }
 
+    delete left_data;
+    delete right_data;
+
     if (integer) {
       return VisitResult(new Data(static_cast<std::int32_t>(prod)));
     }
@@ -142,8 +150,6 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
   }
   case TokenType::SLASH: {
     bool integer = true;
-    Data *left_data = std::get<Data *>(left);
-    Data *right_data = std::get<Data *>(right);
     std::double_t quot = 0.0;
 
     try {
@@ -163,6 +169,9 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
       quot /= number;
       integer = false;
     }
+
+    delete left_data;
+    delete right_data;
 
     if (integer) {
       return VisitResult(new Data(static_cast<std::int32_t>(quot)));
