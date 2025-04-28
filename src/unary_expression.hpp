@@ -7,10 +7,11 @@
 #include <cassert>
 
 namespace Mango {
-class UnaryExpression : Mango::Expression {
+class UnaryExpression : public Mango::Expression {
   Expression *right;
   Token oper;
 
+public:
   UnaryExpression(Expression *right, Token oper) {
     assert(right != nullptr);
 
@@ -35,7 +36,6 @@ class UnaryExpression : Mango::Expression {
 
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-public:
   Expression *getRight() { return right; }
 };
 } // namespace Mango

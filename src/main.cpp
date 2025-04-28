@@ -1,8 +1,7 @@
 #include "ast_printer.hpp"
 #include "expression.hpp"
+#include "parser.hpp"
 #include "scanner.hpp"
-#include "token.hpp"
-#include "visitor.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -17,7 +16,13 @@ int main(int argc, char *argv[]) {
   file.open(argv[1]);
   contents << file.rdbuf();
   Mango::Scanner scanner = Mango::Scanner(contents.str());
-  std::vector<Mango::Token> tokens = scanner.scan();
+  Mango::Parser parser = Mango::Parser(scanner.scan());
+
+  Mango::Expression *expression = parser.parse();
+
+  Mango::AstPrinter printer = Mango::AstPrinter();
+
+  std::wcout << printer.print(*expression);
 
   return 0;
 }

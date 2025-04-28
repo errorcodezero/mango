@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-#include <variant>
 
 std::vector<Mango::Token> Mango::Scanner::scan() {
   using namespace std::string_literals;
@@ -121,12 +120,13 @@ std::optional<wchar_t> Mango::Scanner::peek() {
 }
 
 void Mango::Scanner::push_token(const Mango::TokenType type) {
-  tokens.push_back(Token{.type = type, .lexeme = std::nullopt});
+  tokens.push_back(
+      Token{.type = type, .lexeme = {.line = line, .data = nullptr}});
 };
 
 void Mango::Scanner::push_token(const Mango::TokenType type,
                                 const Mango::Lexeme lexeme) {
-  tokens.push_back(Token{.type = type, .lexeme = std::make_optional(lexeme)});
+  tokens.push_back(Token{.type = type, .lexeme = lexeme});
 }
 
 bool Mango::Scanner::match(const wchar_t expected) {
@@ -172,12 +172,8 @@ void Mango::Scanner::string() {
     str << *peeked;
     advance();
   }
-  push_token(
-      TokenType::STRING_LITERAL,
-      Lexeme{.line = line,
-             .data =
-                 std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
-                     str.str())});
+  push_token(TokenType::STRING_LITERAL,
+             Lexeme{.line = line, .data = new Data(str.str())});
 }
 
 void Mango::Scanner::number(const wchar_t first_digit) {
@@ -200,20 +196,16 @@ void Mango::Scanner::number(const wchar_t first_digit) {
   }
 
   if (floating_point) {
-    push_token(
-        TokenType::FLOAT_LITERAL,
-        Lexeme{
-            .line = line,
-            .data =
-                std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
-                    static_cast<std::double_t>(std::stod(number)))});
+    push_token(TokenType::FLOAT_LITERAL,
+               Lexeme{.line = line,
+                      .data = new Data(
+                          static_cast<std::double_t>(std::stod(number)))});
     return;
   }
   push_token(
       TokenType::INT_LITERAL,
       Lexeme{.line = line,
-             .data = std::variant<std::wstring, std::uint32_t, double, bool>(
-                 static_cast<std::uint32_t>(std::stoul(number)))});
+             .data = new Data(static_cast<std::uint32_t>(std::stoul(number)))});
 }
 
 void Mango::Scanner::identifier(const wchar_t first_char) {
@@ -231,10 +223,6 @@ void Mango::Scanner::identifier(const wchar_t first_char) {
 
   advance();
 
-  push_token(
-      TokenType::IDENTIFIER,
-      Lexeme{.line = line,
-             .data =
-                 std::variant<std::wstring, std::uint32_t, std::double_t, bool>(
-                     identifier)});
+  push_token(TokenType::IDENTIFIER,
+             Lexeme{.line = line, .data = new Data(identifier)});
 }

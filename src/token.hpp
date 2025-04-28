@@ -1,17 +1,15 @@
 #ifndef INCLUDE_SRC_TOKEN_HPP_
 #define INCLUDE_SRC_TOKEN_HPP_
 
+#include "data.hpp"
 #include <cmath>
 #include <cstdint>
-#include <optional>
-#include <string>
-#include <variant>
 
 namespace Mango {
 
 struct Lexeme {
   uint32_t line;
-  std::variant<std::wstring, std::uint32_t, std::double_t, bool> data;
+  Data *data;
 };
 
 enum class TokenType {
@@ -79,7 +77,7 @@ enum class TokenType {
 };
 struct Token {
   TokenType type;
-  std::optional<Lexeme> lexeme;
+  Lexeme lexeme;
 };
 } // namespace Mango
 

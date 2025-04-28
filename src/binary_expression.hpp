@@ -11,6 +11,7 @@ class BinaryExpression : public Mango::Expression {
   Expression *right;
   Token oper;
 
+public:
   BinaryExpression(Expression *left, Expression *right, Token oper) {
     assert(left != nullptr);
     assert(right != nullptr);
@@ -43,7 +44,6 @@ class BinaryExpression : public Mango::Expression {
 
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-public:
   Expression *getLeft() { return left; }
   Expression *getRight() { return right; }
 };

@@ -1,23 +1,19 @@
 #ifndef INCLUDE_SRC_LITERAL_HPP_
 #define INCLUDE_SRC_LITERAL_HPP_
 
+#include "data.hpp"
 #include "expression.hpp"
-#include "token.hpp"
 #include "visitor.hpp"
 #include <cassert>
 
 namespace Mango {
 class LiteralExpression : public Mango::Expression {
-  Lexeme *data;
+  Data *data;
 
 public:
-  LiteralExpression(Lexeme *data) {
-    assert(data != nullptr);
+  LiteralExpression(Data *data) { this->data = data; }
 
-    this->data = data;
-  }
-
-  ~LiteralExpression() { delete data; }
+  ~LiteralExpression() {}
 
   LiteralExpression(LiteralExpression &expr) { data = expr.data; }
 
@@ -30,7 +26,7 @@ public:
 
   virtual VisitResult accept(Visitor &visitor) { return visitor.visit(this); }
 
-  Lexeme *getData() { return data; }
+  Data *getData() { return data; }
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_LITERAL_HPP_
