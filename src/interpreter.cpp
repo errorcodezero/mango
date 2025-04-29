@@ -9,6 +9,8 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <sstream>
+#include <string>
 #include <variant>
 
 namespace Mango {
@@ -62,29 +64,60 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
   // TODO: Add string concat for plus
   case TokenType::PLUS: {
     bool integer = true;
+    bool string = false;
     std::double_t sum = 0.0;
+    std::wstringstream buffer = std::wstringstream(L"");
 
-    try {
-      std::int32_t number = std::get<std::int32_t>(*left_data);
-      sum += number;
-    } catch (std::bad_variant_access &error) {
-      std::double_t number = std::get<std::double_t>(*left_data);
-      sum += number;
+    if (auto *v = std::get_if<std::int32_t>(left_data)) {
+      sum += *v;
+    } else if (auto *v = std::get_if<std::double_t>(left_data)) {
+      sum += *v;
       integer = false;
+    } else if (auto *v = std::get_if<std::wstring>(left_data)) {
+      string = true;
+      if (auto *w = std::get_if<std::int32_t>(right_data)) {
+        v->append(std::to_wstring(*w));
+      } else if (auto *w = std::get_if<std::double_t>(right_data)) {
+        v->append(std::to_wstring(*w));
+      } else if (auto *w = std::get_if<std::wstring>(right_data)) {
+        v->append(*w);
+        string = true;
+        buffer << *v;
+      } else {
+        throw;
+      }
+    } else {
+      throw;
     }
 
-    try {
-      std::int32_t number = std::get<std::int32_t>(*right_data);
-      sum += number;
-    } catch (std::bad_variant_access &error) {
-      std::double_t number = std::get<std::double_t>(*right_data);
-      sum += number;
-      integer = false;
+    if (!string) {
+      if (auto *v = std::get_if<std::int32_t>(right_data)) {
+        sum += *v;
+      } else if (auto *v = std::get_if<std::double_t>(right_data)) {
+        sum += *v;
+        integer = false;
+      } else if (auto *v = std::get_if<std::wstring>(right_data)) {
+        string = true;
+        if (auto *w = std::get_if<std::int32_t>(left_data)) {
+          v->append(std::to_wstring(*w));
+        } else if (auto *w = std::get_if<std::double_t>(left_data)) {
+          v->append(std::to_wstring(*w));
+        } else if (auto *w = std::get_if<std::wstring>(left_data)) {
+          v->append(*w);
+          buffer << *v;
+        } else {
+          throw;
+        }
+      } else {
+        throw;
+      }
     }
 
     delete left_data;
     delete right_data;
-
+    if (string) {
+      return VisitResult(new Data(buffer.str()));
+    }
     if (integer) {
       return VisitResult(new Data(static_cast<std::int32_t>(sum)));
     }

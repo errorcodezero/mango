@@ -5,7 +5,6 @@
 #include "literal_expression.hpp"
 #include "unary_expression.hpp"
 #include "visitor.hpp"
-#include <cstdarg>
 
 namespace Mango {
 std::wstring AstPrinter::parenthesize(std::wstring name,
