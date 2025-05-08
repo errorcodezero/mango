@@ -1,5 +1,5 @@
 #include "scanner.hpp"
-#include "mango.hpp"
+#include "error.hpp"
 #include "token.hpp"
 #include <cassert>
 #include <cctype>
@@ -52,7 +52,7 @@ std::vector<Token> Scanner::scan() {
       push_token(TokenType::SLASH);
       break;
     case '=':
-      match_push_token('=', TokenType::EQUAL, TokenType::EQUAL_EQUAL);
+      match_push_token('=', TokenType::EQUAL_EQUAL, TokenType::EQUAL);
       break;
     case '!':
       match_push_token('=', TokenType::BANG_EQUAL, TokenType::BANG);
@@ -223,7 +223,21 @@ void Scanner::identifier(const wchar_t first_char) {
 
   advance();
 
-  push_token(TokenType::IDENTIFIER,
-             Lexeme{.line = line, .data = new Data(identifier)});
+  if (identifier == L"true") {
+    push_token(TokenType::TRUE);
+  } else if (identifier == L"true") {
+    push_token(TokenType::TRUE);
+  } else if (identifier == L"false") {
+    push_token(TokenType::FALSE);
+  } else if (identifier == L"class") {
+    push_token(TokenType::CLASS);
+  } else if (identifier == L"super") {
+    push_token(TokenType::SUPER);
+  } else if (identifier == L"this") {
+    push_token(TokenType::THIS);
+  } else {
+    push_token(TokenType::IDENTIFIER,
+               Lexeme{.line = line, .data = new Data(identifier)});
+  }
 }
 } // namespace Mango

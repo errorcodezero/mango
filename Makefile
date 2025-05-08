@@ -2,7 +2,7 @@ SRC_DIR = src
 BUILD_DIR = build
 EXE = mango
 
-SRC = main.cpp scanner.cpp mango.cpp ast_printer.cpp parser.cpp interpreter.cpp
+SRC = main.cpp scanner.cpp error.cpp ast_printer.cpp parser.cpp interpreter.cpp
 OBJ = $(SRC:%.cpp=$(BUILD_DIR)/%.o)
 
 CXXFLAGS += -std=c++23 -Wall -Wextra -Werror -pedantic

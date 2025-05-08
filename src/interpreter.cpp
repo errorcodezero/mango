@@ -61,7 +61,6 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
   Data *right_data = std::get<Data *>(right);
 
   switch (expression->get_operator()->type) {
-  // TODO: Add string concat for plus
   case TokenType::PLUS: {
     bool integer = true;
     bool string = false;
@@ -212,6 +211,12 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
       return VisitResult(new Data(static_cast<std::int32_t>(quot)));
     }
     return VisitResult(new Data(quot));
+  }
+  case TokenType::BANG_EQUAL: {
+    return VisitResult(new Data(*left_data != *right_data));
+  }
+  case TokenType::EQUAL_EQUAL: {
+    return VisitResult(new Data(*left_data == *right_data));
   }
   default: {
     throw;
