@@ -8,7 +8,6 @@
 #include "visitor.hpp"
 #include <cassert>
 #include <optional>
-
 namespace Mango {
 Expression *Parser::expression() { return equality(); }
 

@@ -2,7 +2,6 @@
 #define INCLUDE_SRC_TOKEN_HPP_
 
 #include "data.hpp"
-#include <cmath>
 #include <cstdint>
 
 namespace Mango {
@@ -50,7 +49,6 @@ enum class TokenType {
   STRING_LITERAL,
   INT_LITERAL,
   FLOAT_LITERAL,
-  BOOL_LITERAL,
 
   // Keywords.
   CLASS,
@@ -78,6 +76,8 @@ enum class TokenType {
 struct Token {
   TokenType type;
   Lexeme lexeme;
+
+  std::wstring to_string();
 };
 } // namespace Mango
 

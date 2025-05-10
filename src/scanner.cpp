@@ -2,7 +2,6 @@
 #include "error.hpp"
 #include "token.hpp"
 #include <cassert>
-#include <cctype>
 #include <cstdint>
 #include <optional>
 #include <sstream>
@@ -62,6 +61,13 @@ std::vector<Token> Scanner::scan() {
       break;
     case '>':
       match_push_token('=', TokenType::GREATER_EQUAL, TokenType::GREATER);
+      break;
+    case '&':
+      match_push_token('&', TokenType::AMPERSAND_AMPERSAND,
+                       TokenType::AMPERSAND);
+      break;
+    case '|':
+      match_push_token('|', TokenType::BAR_BAR, TokenType::BAR);
       break;
     case '#':
       comment();

@@ -1,17 +1,13 @@
-#include "ast_printer.hpp"
 #include "expression.hpp"
-#include "interpreter.hpp"
 #include "parser.hpp"
 #include "scanner.hpp"
-#include "visitor.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <variant>
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
-    std::cout << "Usage: mango [script]";
+    std::wcout << L"Usage: mango [script]";
     return 65;
   }
   std::wifstream file;
@@ -23,26 +19,10 @@ int main(int argc, char *argv[]) {
 
   Mango::Expression *expression = parser.parse();
 
-  Mango::Interpreter interpreter = Mango::Interpreter();
-
-  Mango::VisitResult result = interpreter.evaluate(expression);
-
-  Mango::Data *data = std::get<Mango::Data *>(result);
-
-  if (auto *v = std::get_if<std::int32_t>(data)) {
-    std::cout << *v;
-  } else if (auto *v = std::get_if<std::double_t>(data)) {
-    std::cout << *v;
-  } else if (auto *v = std::get_if<bool>(data)) {
-    std::cout << *v;
-  } else if (auto *v = std::get_if<std::wstring>(data)) {
-    std::wcout << *v;
-  }
+  expression->print();
+  expression->interpret();
 
   delete expression;
-  delete data;
 
   return 0;
 }
-
-template <typename T> void print(T value) { std::cout << value; }
