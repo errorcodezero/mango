@@ -213,10 +213,16 @@ VisitResult Interpreter::visit(BinaryExpression *expression) {
     return VisitResult(new Data(quot));
   }
   case TokenType::BANG_EQUAL: {
-    return VisitResult(new Data(*left_data != *right_data));
+    VisitResult result = VisitResult(new Data(*left_data != *right_data));
+    delete left_data;
+    delete right_data;
+    return result;
   }
   case TokenType::EQUAL_EQUAL: {
-    return VisitResult(new Data(*left_data == *right_data));
+    VisitResult result = VisitResult(new Data(*left_data == *right_data));
+    delete left_data;
+    delete right_data;
+    return result;
   }
   default: {
     throw;
