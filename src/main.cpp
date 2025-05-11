@@ -1,6 +1,8 @@
 #include "expression.hpp"
+#include "interpreter.hpp"
 #include "parser.hpp"
 #include "scanner.hpp"
+#include "statement.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -17,12 +19,10 @@ int main(int argc, char *argv[]) {
   Mango::Scanner scanner = Mango::Scanner(contents.str());
   Mango::Parser parser = Mango::Parser(scanner.scan());
 
-  Mango::Expression *expression = parser.parse();
+  std::vector<Mango::Statement *> statements = parser.parse();
+  Mango::Interpreter interpreter = Mango::Interpreter();
 
-  expression->print();
-  expression->interpret();
-
-  delete expression;
+  interpreter.interpret(statements);
 
   return 0;
 }

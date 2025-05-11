@@ -3,18 +3,20 @@
 
 #include "error.hpp"
 #include "expression.hpp"
+#include "statement.hpp"
 #include "token.hpp"
 #include <cassert>
 #include <cstdint>
 #include <functional>
 #include <initializer_list>
+#include <iostream>
 #include <optional>
 #include <vector>
 
 namespace Mango {
 class Parser {
 private:
-  std::vector<Mango::Token> tokens = std::vector<Mango::Token>();
+  std::vector<Token> tokens = std::vector<Token>();
   uint32_t current = 0;
 
   Expression *expression();
@@ -24,6 +26,10 @@ private:
   Expression *factor();
   Expression *unary();
   Expression *primary();
+
+  Statement *statement();
+  Statement *print_statement();
+  Statement *expression_statement();
 
   bool match(std::initializer_list<TokenType> types);
   bool check(TokenType type);
@@ -48,13 +54,14 @@ private:
       return advance();
     }
 
-    error(type, message);
+    // error(type, message);
+    std::wcout << message;
     throw;
   };
 
 public:
-  Parser(std::vector<Mango::Token> tokens) : tokens(tokens) {};
-  Expression *parse() { return expression(); }
+  Parser(std::vector<Token> tokens) : tokens(tokens) {};
+  std::vector<Statement *> parse();
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_PARSER_HPP_

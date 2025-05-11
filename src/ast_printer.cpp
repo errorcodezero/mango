@@ -5,7 +5,9 @@
 #include "literal_expression.hpp"
 #include "unary_expression.hpp"
 #include "visitor.hpp"
+#include <iostream>
 #include <string>
+#include <variant>
 
 namespace Mango {
 std::wstring AstPrinter::parenthesize(std::wstring name,
@@ -47,5 +49,13 @@ VisitResult AstPrinter::visit(UnaryExpression *expression) {
 VisitResult AstPrinter::visit(BinaryExpression *expression) {
   return parenthesize(expression->get_operator()->to_string(),
                       expression->get_left(), expression->get_right());
+}
+VisitResult AstPrinter::visit(ExpressionStatement *statement) {
+  std::cout << &statement;
+  return std::monostate();
+}
+VisitResult AstPrinter::visit(PrintStatement *statement) {
+  std::cout << &statement;
+  return std::monostate();
 }
 } // namespace Mango

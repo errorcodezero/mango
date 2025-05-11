@@ -8,10 +8,12 @@
 
 namespace Mango {
 class AstPrinter : public Visitor {
-  virtual VisitResult visit(GroupingExpression *expression);
-  virtual VisitResult visit(LiteralExpression *expression);
-  virtual VisitResult visit(UnaryExpression *expression);
-  virtual VisitResult visit(BinaryExpression *expression);
+  virtual VisitResult visit(GroupingExpression *expression) override;
+  virtual VisitResult visit(LiteralExpression *expression) override;
+  virtual VisitResult visit(UnaryExpression *expression) override;
+  virtual VisitResult visit(BinaryExpression *expression) override;
+  virtual VisitResult visit(ExpressionStatement *statement) override;
+  virtual VisitResult visit(PrintStatement *statement) override;
   std::wstring parenthesize(std::wstring name, Expression *expression1,
                             Expression *expression2);
 

@@ -100,7 +100,7 @@ std::vector<Token> Scanner::scan() {
       } else {
         std::wstring error = L"Unexpected character: ";
         error += *c;
-        Mango::error(error, L"program", line);
+        Mango::error(line, error);
         break;
       }
     }
@@ -241,6 +241,8 @@ void Scanner::identifier(const wchar_t first_char) {
     push_token(TokenType::SUPER);
   } else if (identifier == L"this") {
     push_token(TokenType::THIS);
+  } else if (identifier == L"print") {
+    push_token(TokenType::PRINT);
   } else {
     push_token(TokenType::IDENTIFIER,
                Lexeme{.line = line, .data = new Data(identifier)});

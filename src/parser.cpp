@@ -1,8 +1,10 @@
 #include "parser.hpp"
 #include "binary_expression.hpp"
 #include "expression.hpp"
+#include "expression_statement.hpp"
 #include "grouping_expression.hpp"
 #include "literal_expression.hpp"
+#include "print_statement.hpp"
 #include "token.hpp"
 #include "unary_expression.hpp"
 #include "visitor.hpp"
@@ -10,6 +12,13 @@
 #include <optional>
 namespace Mango {
 Expression *Parser::expression() { return equality(); }
+
+Statement *Parser::statement() {
+  if (match({TokenType::PRINT}))
+    return print_statement();
+
+  return expression_statement();
+}
 
 Expression *Parser::equality() {
   Expression *expression = comparison();
@@ -125,5 +134,23 @@ Expression *Parser::primary() {
 end:
   assert(expression != nullptr);
   return expression;
+}
+
+Statement *Parser::print_statement() {
+  Expression *expression = this->expression();
+  consume(TokenType::SEMICOLON, L"Expect ';' after expression.");
+  return new PrintStatement(expression);
+}
+Statement *Parser::expression_statement() {
+  Expression *expression = this->expression();
+  consume(TokenType::SEMICOLON, L"Expect ';' after expression.");
+  return new ExpressionStatement(expression);
+}
+std::vector<Statement *> Parser::parse() {
+  auto statements = std::vector<Statement *>();
+  while (!at_end()) {
+    statements.push_back(statement());
+  }
+  return statements;
 }
 } // namespace Mango

@@ -10,8 +10,6 @@ class Expression {
 public:
   virtual ~Expression() {};
   virtual VisitResult accept(Visitor &visitor) = 0;
-  void interpret();
-  void print();
 };
 } // namespace Mango
 

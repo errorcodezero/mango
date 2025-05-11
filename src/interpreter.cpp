@@ -1,14 +1,17 @@
 #include "interpreter.hpp"
 #include "binary_expression.hpp"
 #include "data.hpp"
+#include "expression_statement.hpp"
 #include "grouping_expression.hpp"
 #include "literal_expression.hpp"
+#include "print_statement.hpp"
 #include "token.hpp"
 #include "unary_expression.hpp"
 #include "visitor.hpp"
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <variant>
@@ -240,5 +243,24 @@ bool Interpreter::is_truthy(Data *data) {
   }
 
   return true;
+}
+
+VisitResult Interpreter::visit(ExpressionStatement *statement) {
+  return statement->get_expression()->accept(*this);
+}
+VisitResult Interpreter::visit(PrintStatement *statement) {
+  Data *data = std::get<Data *>(statement->get_expression()->accept(*this));
+  if (auto *v = std::get_if<std::wstring>(data)) {
+    std::wcout << *v;
+  } else if (auto *v = std::get_if<std::int32_t>(data)) {
+    std::wcout << *v;
+  } else if (auto *v = std::get_if<std::double_t>(data)) {
+    std::wcout << *v;
+  } else if (auto *v = std::get_if<bool>(data)) {
+    std::wcout << (*v ? "true" : "false");
+  }
+  std::wcout << "\n";
+  delete data;
+  return std::monostate();
 }
 } // namespace Mango
