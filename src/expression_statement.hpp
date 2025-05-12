@@ -14,6 +14,15 @@ public:
     return visitor.visit(this);
   };
   ExpressionStatement(Expression *expression) : expression(expression) {};
+  ExpressionStatement &operator=(const ExpressionStatement &statement) {
+    if (this != &statement) {
+      expression = statement.expression;
+    }
+    return *this;
+  }
+  ExpressionStatement(ExpressionStatement &statement) {
+    expression = statement.expression;
+  }
   virtual ~ExpressionStatement() { delete expression; }
   Expression *get_expression() { return expression; }
 };

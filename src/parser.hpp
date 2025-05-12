@@ -55,7 +55,7 @@ private:
     }
 
     // error(type, message);
-    std::wcout << message;
+    message.append(L"");
     throw;
   };
 

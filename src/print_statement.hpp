@@ -12,6 +12,15 @@ private:
 
 public:
   PrintStatement(Expression *expression) : expression(expression) {}
+  PrintStatement &operator=(const PrintStatement &statement) {
+    if (this != &statement) {
+      expression = statement.expression;
+    }
+    return *this;
+  }
+  PrintStatement(PrintStatement &statement) {
+    expression = statement.expression;
+  }
   virtual ~PrintStatement() { delete expression; }
   Expression *get_expression() { return expression; }
 };
