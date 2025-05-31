@@ -14,6 +14,7 @@ class UnaryExpression;
 class BinaryExpression;
 class ExpressionStatement;
 class PrintStatement;
+class VarStatement;
 
 class Visitor {
 public:
@@ -24,6 +25,7 @@ public:
 
   virtual VisitResult visit(ExpressionStatement *statement) = 0;
   virtual VisitResult visit(PrintStatement *statement) = 0;
+  virtual VisitResult visit(VarStatement *statement) = 0;
 };
 } // namespace Mango
 #endif // INCLUDE_SRC_VISITOR_HPP_

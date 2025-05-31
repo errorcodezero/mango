@@ -11,6 +11,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <optional>
+#include <stdexcept>
 #include <vector>
 
 namespace Mango {
@@ -30,6 +31,8 @@ private:
   Statement *statement();
   Statement *print_statement();
   Statement *expression_statement();
+  Statement *declaration();
+  Statement *var_declaration();
 
   bool match(std::initializer_list<TokenType> types);
   bool check(TokenType type);
@@ -48,14 +51,17 @@ private:
     return tokens.at(current);
   }
   std::optional<std::reference_wrapper<Token>> peek_previous();
-  std::optional<std::reference_wrapper<Token>> consume(TokenType type,
-                                                       std::wstring message) {
+  Token consume(TokenType type, std::wstring message) {
     if (check(type)) {
-      return advance();
+      return *advance();
     }
 
-    // error(type, message);
-    message.append(L"");
+    try {
+      error(peek(), message);
+    } catch (std::out_of_range &err) {
+      std::cerr << "Error at the end";
+      error(*peek_previous(), message);
+    }
     throw;
   };
 

@@ -5,10 +5,14 @@
 #include "grouping_expression.hpp"
 #include "literal_expression.hpp"
 #include "print_statement.hpp"
+#include "statement.hpp"
 #include "token.hpp"
 #include "unary_expression.hpp"
+#include "var_expression.hpp"
+#include "var_statement.hpp"
 #include "visitor.hpp"
 #include <cassert>
+#include <iterator>
 #include <optional>
 namespace Mango {
 Expression *Parser::expression() { return equality(); }
@@ -145,6 +149,23 @@ Statement *Parser::expression_statement() {
   Expression *expression = this->expression();
   consume(TokenType::SEMICOLON, L"Expect ';' after expression.");
   return new ExpressionStatement(expression);
+}
+Statement *Parser::declaration() {
+  if (match({TokenType::VAR}))
+    return var_declaration();
+
+  return statement();
+}
+Statement *Parser::var_declaration() {
+  Token name = consume(TokenType::IDENTIFIER, L"Expect variable name.");
+
+  Expression *initializer = nullptr;
+  if (match({TokenType::EQUAL})) {
+    initializer = expression();
+  }
+
+  consume(TokenType::SEMICOLON, L"Expect ; after variable declaration.");
+  return new VarStatement(name, initializer);
 }
 std::vector<Statement *> Parser::parse() {
   auto statements = std::vector<Statement *>();
