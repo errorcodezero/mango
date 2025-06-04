@@ -5,8 +5,8 @@ A fresh take on programming.
 ## Get started
 
 Prerequisites:
-    - C++23 Compiler(gcc and clang work)
-    - GNU Make
+- C++23 Compiler(gcc and clang work)
+- GNU Make
 
 Compile the code with `make release`.
 It should then create a new directory
