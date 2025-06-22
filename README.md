@@ -1,5 +1,7 @@
 # Mango
 
+[![asciicast](https://asciinema.org/a/tSPLE5iwVnF3XMF8cstm7dm8W.svg)](https://asciinema.org/a/tSPLE5iwVnF3XMF8cstm7dm8W)
+
 A fresh take on programming.
 
 ## Get started
@@ -12,6 +14,17 @@ Compile the code with `make release`.
 It should then create a new directory
 called build with the executable inside
 it. Path should be `./build/mango`.
+
+## Features
+
+Coming soon!
+
+- Order of Operations ✅
+- Print Statements ✅
+- Variables (kinda)
+- Functions ❌
+- Classes ❌
+- Turing Complete ❌
 
 ## Usage
 
